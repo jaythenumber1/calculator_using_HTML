@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator with Memory Functions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+      animation: backgroundChange 10s infinite alternate;
+    }
+
+    .calculator {
+      max-width: 300px;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 15px;
+      background-color: #ffffff;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
+
+    #result {
+      width: 220px;
+      height: 50px;
+      margin: 5px 0;
+      font-size: 20px;
+      text-align: right;
+      padding-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background-color: #f0f0f0;
+      animation: bounce 1s ease infinite alternate;
+    }
+
+    input {
+      width: 50px;
+      height: 50px;
+      margin: 5px;
+      font-size: 20px;
+      background-color: #84fab0;
+      border: 2px solid #8fd3f4;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    input:hover {
+      background-color: #8fd3f4;
+      transform: scale(1.1);
+    }
+
+    input:active {
+      transform: scale(0.9);
+    }
+
+    input[value="C"] {
+      background-color: #ffb74d;
+      border: 2px solid #ffa726;
+      color: white;
+    }
+
+    input[value="C"]:hover {
+      background-color: #ffa726;
+    }
+
+    input[value="="] {
+      background-color: #42a5f5;
+      border: 2px solid #64b5f6;
+      color: white;
+    }
+
+    input[value="="]:hover {
+      background-color: #64b5f6;
+    }
+
+    input[value="+"] {
+      background-color: #ffa726;
+      border: 2px solid #ffb74d;
+      color: white;
+    }
+
+    input[value="-"] {
+      background-color: #ef5350;
+      border: 2px solid #e57373;
+      color: white;
+    }
+
+    input[value="*"] {
+      background-color: #66bb6a;
+      border: 2px solid #81c784;
+      color: white;
+    }
+
+    input[value="/"] {
+      background-color: #ab47bc;
+      border: 2px solid #ba68c8;
+      color: white;
+    }
+
+    input[value="MC"], input[value="MR"], input[value="MS"] {
+      background-color: #ffb74d;
+      border: 2px solid #ffa726;
+      color: white;
+    }
+
+    @keyframes backgroundChange {
+      0% { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); }
+      100% { background: linear-gradient(135deg, #f78ca0 0%, #f9748f 100%); }
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <input type="text" id="result" disabled>
+    <br>
+    <input type="button" value="1" onclick="appendNumber('1')">
+    <input type="button" value="2" onclick="appendNumber('2')">
+    <input type="button" value="3" onclick="appendNumber('3')">
+    <input type="button" value="+" onclick="appendNumber('+')">
+    <br>
+    <input type="button" value="4" onclick="appendNumber('4')">
+    <input type="button" value="5" onclick="appendNumber('5')">
+    <input type="button" value="6" onclick="appendNumber('6')">
+    <input type="button" value="-" onclick="appendNumber('-')">
+    <br>
+    <input type="button" value="7" onclick="appendNumber('7')">
+    <input type="button" value="8" onclick="appendNumber('8')">
+    <input type="button" value="9" onclick="appendNumber('9')">
+    <input type="button" value="*" onclick="appendNumber('*')">
+    <br>
+    <input type="button" value="C" onclick="clearResult()">
+    <input type="button" value="0" onclick="appendNumber('0')">
+    <input type="button" value="." onclick="appendDecimal()">
+    <input type="button" value="/" onclick="appendNumber('/')">
+    <br>
+    <input type="button" value="MS" onclick="memorySave()">
+    <input type="button" value="MR" onclick="memoryRecall()">
+    <input type="button" value="MC" onclick="memoryClear()">
+    <input type="button" value="=" onclick="calculateResult()">
+  </div>
+
+  <script>
+    let resultField = document.getElementById('result');
+    let decimalAdded = false;
+    let memory = 0; // Memory storage
+
+    // Append number or operator to the result field
+    function appendNumber(number) {
+      resultField.value += number;
+    }
+
+    // Append decimal point
+    function appendDecimal() {
+      if (!decimalAdded) {
+        resultField.value += '.';
+        decimalAdded = true;
+      }
+    }
+
+    // Clear the result field
+    function clearResult() {
+      resultField.value = '';
+      decimalAdded = false;
+    }
+
+    // Calculate the result using eval
+    function calculateResult() {
+      try {
+        resultField.value = eval(resultField.value);
+        decimalAdded = resultField.value.includes('.'); // Reset decimal check based on result
+      } catch (error) {
+        resultField.value = 'Error';
+      }
+    }
+
+    // Memory Functions
+
+    // Memory Save (MS) - Save current value to memory
+    function memorySave() {
+      memory = parseFloat(resultField.value) || 0;
+      clearResult(); // Clear result after saving to memory
+    }
+
+    // Memory Recall (MR) - Recall the saved memory value
+    function memoryRecall() {
+      resultField.value += memory;
+      decimalAdded = resultField.value.includes('.'); // Adjust decimal flag if recalled value has a decimal
+    }
+
+    // Memory Clear (MC) - Clear the memory
+    function memoryClear() {
+      memory = 0;
+    }
+  </script>
+
+</body>
+</html>
